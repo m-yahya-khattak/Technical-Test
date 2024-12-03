@@ -1,0 +1,39 @@
+# Node.js dependencies
+/node_modules/
+
+# Firebase service account key
+/firebase/serviceAccountKey.json
+
+# Logs
+*.log
+
+# Environment variables
+.env
+
+# Build directory
+/dist/
+
+# TypeScript build output
+/build/
+
+# npm package logs
+npm-debug.log*
+
+# Yarn package logs
+yarn-debug.log*
+yarn-error.log*
+
+# IDE/Editor specific
+/.vscode/
+/.idea/
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Operating System specific
+/.vscode/
+/.idea/
+/*.sublime-workspace
+
+/config/firebasekey.json
