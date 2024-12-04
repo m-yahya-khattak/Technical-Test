@@ -1,4 +1,4 @@
-import { db } from "../config/firebaseconfig";
+import { db } from "../config/firebaseConfig";
 import { User } from "../entities/user";
 
 const USERS_COLLECTION = "USERS";
