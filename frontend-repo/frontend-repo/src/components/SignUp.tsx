@@ -1,7 +1,8 @@
-"use client";
+'use client';
 
 import React, { useState } from "react";
-import { createUserWithEmailAndPassword } from "firebase/auth";
+import { useRouter } from "next/navigation"; // Import useRouter hook
+import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import {
   Box,
   TextField,
@@ -12,12 +13,13 @@ import {
 import { auth } from "@/firebase/firebase";
 
 const SignupForm: React.FC = () => {
+  const router = useRouter(); // Initialize the router
+  const [displayName, setDisplayName] = useState<string>("");
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [confirmPassword, setConfirmPassword] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<boolean>(false);
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -29,11 +31,19 @@ const SignupForm: React.FC = () => {
 
     setLoading(true);
     setError(null);
-    setSuccess(false);
 
     try {
-      await createUserWithEmailAndPassword(auth, email, password);
-      setSuccess(true);
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+
+      // Update the user profile with the display name
+      await updateProfile(userCredential.user, { displayName });
+
+      // Redirect to login page on success
+      router.push("/login");
     } catch (err: any) {
       setError(err.message || "Signup failed.");
     } finally {
@@ -58,6 +68,15 @@ const SignupForm: React.FC = () => {
         Sign Up
       </Typography>
       <form onSubmit={handleSignup}>
+        <TextField
+          label="Display Name"
+          variant="outlined"
+          fullWidth
+          margin="normal"
+          value={displayName}
+          onChange={(e) => setDisplayName(e.target.value)}
+          required
+        />
         <TextField
           label="Email"
           variant="outlined"
@@ -90,11 +109,6 @@ const SignupForm: React.FC = () => {
         {error && (
           <Typography color="error" sx={{ mt: 2 }}>
             {error}
-          </Typography>
-        )}
-        {success && (
-          <Typography color="success.main" sx={{ mt: 2 }}>
-            Account created successfully!
           </Typography>
         )}
         <Button

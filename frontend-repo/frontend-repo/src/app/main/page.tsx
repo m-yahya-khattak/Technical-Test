@@ -1,56 +1,120 @@
 'use client';
 
-import React from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { Button, Typography, Box } from '@mui/material';
-import { RootState } from '@/store/store';
-import { updateUserError, updateUserStart, updateUserSuccess } from '@/store/actions';
+import React, { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
+import { Box, Typography, Button, CircularProgress } from "@mui/material";
+import { useAuth } from "@/context/AuthProvider";
+import { RootState } from "@/store/store";
+import UpdateButton from "@/components/UpdateButton";
+import ProtectedRoute from "@/components/ProtectedRoute";
+import { fetchUserData } from "@/apis/userApi";
+import router from "next/router";
+
+interface UserData {
+  uid: string;
+  email: string;
+  displayName: string;
+  age: string;
+  occupation: string;
+  passion: string;
+}
 
 const MainPage: React.FC = () => {
-  const dispatch = useDispatch();
-  const { user, loading, error } = useSelector((state: RootState) => state.user);
+  const { user, loading: userLoading, error: userError } = useSelector((state: RootState) => state.user);
+  const { logout } = useAuth();
+  const [userData, setUserData] = useState<UserData | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleUpdate = async () => {
-    dispatch(updateUserStart());
+  const handleLogout = async () => {
     try {
-      // Simulate an API call
-      const updatedData = { name: 'Updated Name', role: 'Admin' }; // Mocked update
-      dispatch(updateUserSuccess(updatedData));
-    } catch (err: any) {
-      dispatch(updateUserError(err.message || 'Update failed'));
+      await logout();
+      console.log("User logged out");
+      
+      // Optional: Clear any local state if needed
+      setUserData(null);
+      setError(null);
+
+      // Redirect to login page after logout
+      router.push("/login"); 
+    } catch (err) {
+      console.error("Logout failed:", err);
+      setError("Failed to logout.");
     }
   };
 
+  useEffect(() => {
+    const fetchData = async () => {
+      if (user?.uid) {
+        setLoading(true);
+        setError(null);
+        try {
+          const data = await fetchUserData(user.uid);
+          setUserData(data);
+        } catch (err) {
+          console.error("Error fetching user data:", err);
+          setError("Failed to fetch user data.");
+        } finally {
+          setLoading(false);
+        }
+      }
+    };
+
+    fetchData();
+  }, [user?.uid]);
+
   return (
-    <Box
-      display="flex"
-      flexDirection="column"
-      alignItems="center"
-      justifyContent="center"
-      minHeight="100vh"
-      padding={2}
-    >
-      <Typography variant="h4" gutterBottom>
-        Welcome, {user?.email || 'User'}
-      </Typography>
-      <Typography variant="body1" gutterBottom>
-        Role: {user?.role || 'N/A'}
-      </Typography>
-      <Button
-        variant="contained"
-        color="primary"
-        onClick={handleUpdate}
-        disabled={loading}
+    <ProtectedRoute>
+      <Box
+        display="flex"
+        flexDirection="column"
+        alignItems="center"
+        justifyContent="center"
+        minHeight="100vh"
+        padding={2}
       >
-        Update User Data
-      </Button>
-      {loading && <Typography variant="body2">Updating...</Typography>}
-      {error && (
-        <Typography color="error" variant="body2" marginTop={1}>
-          {error}
-        </Typography>
-      )}
-    </Box>
+        {userLoading ? (
+          <CircularProgress />
+        ) : userError ? (
+          <Typography color="error">{userError}</Typography>
+        ) : user && (
+          <>
+            <Typography variant="h4" gutterBottom>
+              Welcome, {user.name || "User"}
+            </Typography>
+            <Typography variant="body1" gutterBottom>
+              Email: {user.email || "N/A"}
+            </Typography>
+
+            {loading ? (
+              <CircularProgress />
+            ) : error ? (
+              <Typography color="error">{error}</Typography>
+            ) : userData ? (
+              <>
+                <Typography variant="h6" gutterBottom>
+                  User Data Fetched from API:
+                </Typography>
+                <Typography variant="body1">age: {userData.age}</Typography>
+                <Typography variant="body1">occupation: {userData.occupation}</Typography>
+                <Typography variant="body1">passion: {userData.passion}</Typography>
+              </>
+            ) : (
+              <Typography variant="body2">No additional user data found.</Typography>
+            )}
+          </>
+        )}
+        <UpdateButton />
+        <Button
+          variant="contained"
+          color="secondary"
+          onClick={handleLogout}
+          sx={{ mt: 3 }}
+        >
+          Logout
+        </Button>
+      </Box>
+    </ProtectedRoute>
   );
 };
 

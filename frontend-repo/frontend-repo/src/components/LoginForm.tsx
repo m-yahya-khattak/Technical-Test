@@ -1,29 +1,26 @@
 "use client";
 
 import React, { useState } from "react";
-import { useRouter } from "next/navigation"; // For routing
+import { useRouter } from "next/navigation";
 import { TextField, Button, Box, Typography } from "@mui/material";
-import { signInWithEmailAndPassword } from "firebase/auth";
-import { auth } from "@/firebase/firebase";
+import { useAuth } from "@/context/AuthProvider";
 
 const LoginForm = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const { login } = useAuth(); // Access login method from AuthProvider
+  const [email, setEmail] = useState<string>("m.yahya_khattak@yahoo.com");
+  const [password, setPassword] = useState<string>("password");
   const [error, setError] = useState<string | null>(null);
-  const router = useRouter(); // Initialize router for navigation
+  const router = useRouter();
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
-    setError(null); // Reset error state
+    setError(null);
     try {
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      console.log("Logged in user:", userCredential.user);
-
-      // Redirect to the main page on successful login
-      router.push("/main");
-    } catch (error: any) {
-      console.error("Login error:", error);
-      setError(error.message || "Failed to login.");
+      await login(email, password); // Use login from context
+      router.push("/main"); // Redirect on success
+    } catch (err: any) {
+      console.error("Login error:", err);
+      setError(err.message || "Failed to login.");
     }
   };
 
