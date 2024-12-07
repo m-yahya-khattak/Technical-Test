@@ -8,7 +8,7 @@ import { RootState } from "@/store/store";
 import UpdateButton from "@/components/UpdateButton";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import { fetchUserData } from "@/apis/userApi";
-import router from "next/router";
+import { useRouter } from "next/navigation";
 
 interface UserData {
   uid: string;
@@ -25,21 +25,17 @@ const MainPage: React.FC = () => {
   const [userData, setUserData] = useState<UserData | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
 
   const handleLogout = async () => {
     try {
-      await logout();
-      console.log("User logged out");
-      
-      // Optional: Clear any local state if needed
-      setUserData(null);
-      setError(null);
-
-      // Redirect to login page after logout
-      router.push("/login"); 
-    } catch (err) {
-      console.error("Logout failed:", err);
-      setError("Failed to logout.");
+      await logout(); // Call the logout function
+      console.log("User logged out successfully");
+  
+      // Navigate to login page
+      router.push("/login");
+    } catch (err: any) {
+      console.error("Logout failed:", err.message || err);
     }
   };
 
