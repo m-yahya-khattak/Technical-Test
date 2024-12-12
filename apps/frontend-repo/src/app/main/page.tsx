@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { Box, Typography, Button, CircularProgress } from "@mui/material";
 import { useAuth } from "@/context/AuthProvider";
@@ -9,23 +9,31 @@ import UpdateButton from "@/components/UpdateButton";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import { fetchUserData } from "@/apis/userApi";
 import { useRouter } from "next/navigation";
-
-interface UserData {
-  uid: string;
-  email: string;
-  displayName: string;
-  age: string;
-  occupation: string;
-  passion: string;
-}
+import { User } from "shared/types/user";
 
 const MainPage: React.FC = () => {
   const { user, loading: userLoading, error: userError } = useSelector((state: RootState) => state.user);
   const { logout } = useAuth();
-  const [userData, setUserData] = useState<UserData | null>(null);
+  const [userData, setUserData] = useState<User | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
+
+  const fetchUserDetails = useCallback(async () => {
+    if (user?.uid) {
+      setLoading(true);
+      setError(null);
+      try {
+        const data = await fetchUserData(user.uid);
+        setUserData(data);
+      } catch (err) {
+        console.error("Error fetching user data:", err);
+        setError("Failed to fetch user data.");
+      } finally {
+        setLoading(false);
+      }
+    }
+  }, [user?.uid]);
 
   const handleLogout = async () => {
     try {
@@ -40,24 +48,8 @@ const MainPage: React.FC = () => {
   };
 
   useEffect(() => {
-    const fetchData = async () => {
-      if (user?.uid) {
-        setLoading(true);
-        setError(null);
-        try {
-          const data = await fetchUserData(user.uid);
-          setUserData(data);
-        } catch (err) {
-          console.error("Error fetching user data:", err);
-          setError("Failed to fetch user data.");
-        } finally {
-          setLoading(false);
-        }
-      }
-    };
-
-    fetchData();
-  }, [user?.uid]);
+    fetchUserDetails();
+  }, [fetchUserDetails, user?.uid]);
 
   return (
     <ProtectedRoute>
@@ -100,7 +92,7 @@ const MainPage: React.FC = () => {
             )}
           </>
         )}
-        <UpdateButton />
+        <UpdateButton onUserUpdate={fetchUserDetails}/>
         <Button
           variant="contained"
           color="secondary"

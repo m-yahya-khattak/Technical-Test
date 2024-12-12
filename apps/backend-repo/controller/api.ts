@@ -14,6 +14,13 @@ export const createUserData = async (req: Request, res: Response) => {
   }
 
   try {
+    const existingUser = await fetchUser(userData.uid);
+    if (existingUser) {
+      // User already exists, return a success message and move on
+      res.status(200).json({ message: "User already exists, no action taken." });
+      return;
+    }
+    
     await createUser(userData);
     res.status(201).json({ message: "User document created successfully" });
   } catch (error: any) {

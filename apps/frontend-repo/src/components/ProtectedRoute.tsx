@@ -19,13 +19,10 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) =
   const router = useRouter();
 
   useEffect(() => {
-    console.log("Get user from session")
     const storedUser = getUserFromSessionStorage();
 
     if (!loading) {
       if ((!user && storedUser) || isSessionExpired()) {
-        // Sync Redux with localStorage user if needed
-        console.log("No user or storedUser", user)
         if (storedUser && !isSessionExpired()) {
           dispatch(fetchUserSuccess(storedUser));
         } else {
@@ -37,8 +34,6 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) =
       }
     }
   }, [user, loading, dispatch, router]);
-
-  console.log("Protected Route", user);
 
   if (loading || (!user && !getUserFromSessionStorage())) {
     // Show a loader if state is still resolving

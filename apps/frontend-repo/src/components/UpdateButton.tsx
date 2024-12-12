@@ -13,7 +13,11 @@ import { RootState } from "@/store/store";
 import { validateUser } from "shared/utils/userValidation";
 import { User } from "shared/types/user";
 
-const UpdateButton = () => {
+interface UpdateButtonProps {
+  onUserUpdate: () => void; // Function to trigger user data fetch
+}
+
+const UpdateButton: React.FC<UpdateButtonProps> = ({ onUserUpdate }) => {
   const dispatch = useDispatch();
   const { user, loading, error } = useSelector((state: RootState) => state.user);
 
@@ -60,6 +64,8 @@ const UpdateButton = () => {
 
       dispatch(updateUserSuccess(updatedData)); // Update Redux store
       console.log("User updated successfully:", updatedData);
+
+      onUserUpdate(); // Trigger fetchUserData from parent
     } catch (err) {
       console.error("Update failed:", err);
       dispatch(updateUserError("Failed to update user data."));
