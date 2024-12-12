@@ -58,18 +58,37 @@ backend-repo/
 ### Directory Structure:
 ```
 frontend-repo/
-├── apis/
-│   └── userApi.ts
-│   └── user.ts
-├── theme/
-├── app/
-├── components/
-│   └── UpdateButton.tsx
-├── store/
-│   ├── actions.ts
-│   ├── reducers.ts
-│   └── store.ts
+├── src/
+│   ├── apis/
+│   │   └── userApi.ts
+│   ├── app/
+│   │   ├── fonts/
+│   │   ├── login/
+│   │   │   └── page.tsx
+│   │   ├── main/
+│   │   │   └── page.tsx
+│   │   ├── signup/
+│   │       └── page.tsx
+│   │   ├── layout.tsx
+│   │   └── page.tsx
+│   ├── components/
+│   │   ├── LoginForm.tsx
+│   │   ├── ProtectedRoute.tsx
+│   │   ├── SignUp.tsx
+│   │   └── UpdateButton.tsx
+│   ├── context/
+│   │   └── AuthProvider.tsx
+│   ├── firebase/
+│   │   └── firebase.ts
+│   ├── store/
+│   │   ├── actions.ts
+│   │   ├── reducers.ts
+│   │   └── store.ts
+│   ├── theme/
+│   │   └── index.ts
+│   └── providers.tsx
 └── package.json
+
 ```
 
 ### Functionality:
