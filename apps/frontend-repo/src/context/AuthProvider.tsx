@@ -19,12 +19,10 @@ const setSessionExpiry = () => {
     const currentTime = Date.now()  
   const expiryTime = currentTime + 2400 * 60 * 60
   localStorage.setItem("sessionExpiry", expiryTime.toString());
-//   console.log("current time", currentTime, "expiry", expiryTime)
 };
 
 export const isSessionExpired = (): boolean => {
     const expiryTime = localStorage.getItem("sessionExpiry");
-    // console.log("isexpiry", expiryTime)
     if (!expiryTime) return true; // No expiry set means session is invalid
     return Date.now() > parseInt(expiryTime, 10); // Compare current time to expiry
 };
@@ -62,13 +60,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const userCredential = await signInWithEmailAndPassword(auth, email, password);
     const userData = { email: userCredential.user.email, uid: userCredential.user.uid, name: userCredential.user.displayName };
     console.log("userCreds", userCredential)
-    await createUserData(userCredential.user.uid, userCredential.user.email!, userCredential.user.displayName!);
     localStorage.setItem("refreshToken", userCredential.user.refreshToken)
     const accessToken = await userCredential.user.getIdToken();
     localStorage.setItem("accessToken", accessToken)
     setUser(userCredential.user);
     localStorage.setItem("user", JSON.stringify(userData)); // Persist session
     setSessionExpiry()
+    await createUserData(userCredential.user.uid, userCredential.user.email!, userCredential.user.displayName!);
     dispatch(fetchUserSuccess(userData));
   };
 

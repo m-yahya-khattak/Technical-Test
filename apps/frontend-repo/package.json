@@ -18,7 +18,8 @@
     "next": "15.0.3",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "react-redux": "^9.1.2"
+    "react-redux": "^9.1.2",
+    "shared": "file:../../packages/shared"
   },
   "devDependencies": {
     "@types/node": "^20",

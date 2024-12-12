@@ -1,9 +1,17 @@
 import { Request, Response } from "express";
 import { updateUser, fetchUser, createUser } from "../repository/userCollection";
-import { User } from "../entities/user";
+// import { User } from "../entities/user";
+import { User } from "shared/types/user";
+import { validateUser } from "shared/utils/userValidation";
 
 export const createUserData = async (req: Request, res: Response) => {
   const userData: User = req.body; // Expecting user data in the request body
+
+  const validationErrors = validateUser(userData);
+  if (validationErrors.length > 0) {
+    res.status(400).json({ errors: validationErrors });
+    return; // Ensure the function resolves here
+  }
 
   try {
     await createUser(userData);

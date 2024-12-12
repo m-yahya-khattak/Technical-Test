@@ -8,7 +8,7 @@ export const createUserData = async (uid: string, email: string, displayName: st
       `${API_BASE_URL}/api/user`,  // Backend API route
       { uid, email, displayName },  // Pass data in the body of the request
       {
-        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },  // Include auth token
+        headers: { Authorization: `Bearer ${localStorage.getItem("accessToken")}` },  // Include auth token
       }
     );
     return response.data;
@@ -21,7 +21,7 @@ export const createUserData = async (uid: string, email: string, displayName: st
 
 export const fetchUserData = async (userId: string) => {
   const response = await axios.get(`${API_BASE_URL}/api/user/${userId}`, {
-    headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }, // Include auth token
+    headers: { Authorization: `Bearer ${localStorage.getItem("accessToken")}` }, // Include auth token
   });
   return response.data;
 };
@@ -31,7 +31,7 @@ export const updateUserData = async (userId: string, updates: Record<string, any
     `${API_BASE_URL}/api/user/${userId}`,
     updates,
     {
-      headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }, // Include auth token
+      headers: { Authorization: `Bearer ${localStorage.getItem("accessToken")}` }, // Include auth token
     }
   );
   return response.data;

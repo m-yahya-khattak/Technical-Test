@@ -17,6 +17,7 @@
     "dotenv": "^16.4.6",
     "express": "^4.21.1",
     "firebase-admin": "^13.0.1",
+    "shared": "file:../../packages/shared",
     "supertest": "^7.0.0"
   },
   "devDependencies": {

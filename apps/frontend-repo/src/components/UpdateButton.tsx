@@ -10,6 +10,8 @@ import {
 } from "@/store/actions";
 import { updateUserData } from "@/apis/userApi";
 import { RootState } from "@/store/store";
+import { validateUser } from "shared/utils/userValidation";
+import { User } from "shared/types/user";
 
 const UpdateButton = () => {
   const dispatch = useDispatch();
@@ -26,9 +28,30 @@ const UpdateButton = () => {
       return;
     }
 
+    
+    const updatedUserData: Partial<User> = {
+      age: newAge ? parseInt(newAge, 10) : undefined,
+      occupation: newOccupation || undefined,
+      passion: newPassion || undefined,
+    };
+
+    const fullUserData: User = {
+      uid: user.uid,
+      displayName: user.displayName || "Unknown", // Provided fallback for required fields
+      email: user.email || "unknown@example.com", // Provided fallback for required fields
+      ...updatedUserData,
+    };
+
+    const validationErrors = validateUser(fullUserData);
+    if (validationErrors.length > 0) {
+      dispatch(updateUserError(validationErrors.join(", ")));
+      return;
+    }
+
     dispatch(updateUserStart());
     try {
       // Combine all fields into an object to update
+
       const updatedData = await updateUserData(user.uid, {
         age: newAge,
         occupation: newOccupation,
@@ -89,11 +112,6 @@ const UpdateButton = () => {
       )}
       {loading && <Typography>Loading...</Typography>}
       {error && <Typography color="error">{error}</Typography>}
-      {user && (
-        <Typography sx={{ mt: 2 }}>
-          Updated User: {JSON.stringify(user, null, 2)}
-        </Typography>
-      )}
     </Box>
   );
 };
