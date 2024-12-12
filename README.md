@@ -103,16 +103,16 @@ technical-test/
 └── turbo.json
 ```
 
-#### **Shared Logic**
+#### Shared Logic
 - **`user.ts` (in `packages/shared/types/`)**:
   Contains the `User` type definition to ensure consistent data structures across both frontend and backend.
 - **`userValidation.ts` (in `packages/shared/utils/`)**:
   Includes the `validateUser` function to validate `User` objects consistently across frontend and backend.
 
-#### **Turborepo Configuration**
+#### Turborepo Configuration
 The `turbo.json` file is set up to manage dependencies and tasks across the monorepo efficiently. It allows for parallel builds and shared caching.
 
-#### **Usage of Shared Logic**
+#### Usage of Shared Logic
 - **Frontend**: The shared `User` type and validation logic are used in components like `UpdateButton.tsx` to validate user input.
 - **Backend**: The shared logic is utilized in `controller/api.ts` to validate incoming requests before processing.
 
